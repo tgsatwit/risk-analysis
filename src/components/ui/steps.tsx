@@ -68,7 +68,7 @@ export function Steps({
                       : isCompleted 
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-muted bg-background text-muted-foreground",
-                    onStepClick && "hover:bg-muted/20 cursor-pointer"
+                    onStepClick && "hover:bg-slate-600 hover:border-slate-600 hover:text-white cursor-pointer"
                   )}
                 >
                   {isCompleted ? (
