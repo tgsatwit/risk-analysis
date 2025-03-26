@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function HomePage() {
+export default function NotFound() {
   const router = useRouter();
   
   useEffect(() => {
@@ -18,4 +18,4 @@ export default function HomePage() {
       </div>
     </div>
   );
-}
+} 

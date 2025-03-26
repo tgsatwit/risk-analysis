@@ -4,18 +4,21 @@ import React, { useState } from 'react';
 import { useSetup } from '@/lib/setup-context';
 import { SETUP_STEPS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
-import { Steps } from '@/components/ui/steps';
+import { Steps, StepItem } from '@/components/ui/steps';
 import { MainLayout } from '@/components/layout/main-layout';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { SetupState } from '@/lib/types';
 
 interface WizardLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode | ((props: { state: SetupState }) => React.ReactNode);
   title: string;
   description?: string;
   onNext?: () => boolean | Promise<boolean>;
   onBack?: () => void;
   nextDisabled?: boolean;
   showNav?: boolean;
+  steps?: StepItem[];
+  customStepLabels?: boolean;
 }
 
 export function WizardLayout({
@@ -26,14 +29,28 @@ export function WizardLayout({
   onBack,
   nextDisabled = false,
   showNav = true,
+  steps,
+  customStepLabels = false,
 }: WizardLayoutProps) {
   const { state, updateState } = useSetup();
   const { currentStep, completedSteps } = state;
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleNext = async () => {
     if (onNext) {
-      const canProceed = await onNext();
-      if (!canProceed) return;
+      setIsProcessing(true);
+      try {
+        const canProceed = await onNext();
+        if (!canProceed) {
+          setIsProcessing(false);
+          return;
+        }
+      } catch (error) {
+        console.error('Error in next step handler:', error);
+        setIsProcessing(false);
+        return;
+      }
+      setIsProcessing(false);
     }
 
     const newCompleted = [...completedSteps];
@@ -64,49 +81,65 @@ export function WizardLayout({
     }
   };
 
+  // Use provided steps or fall back to SETUP_STEPS from constants
+  const displaySteps = steps || SETUP_STEPS;
+
+  // Render children based on type (function or React node)
+  const renderChildren = () => {
+    if (typeof children === 'function') {
+      return children({ state });
+    }
+    return children;
+  };
+
   return (
     <MainLayout>
-      <div className="w-full py-6">
+      <div className="w-full py-4">
+        <div className="flex justify-between items-center mb-4 px-6">
+          <div>
+            <h2 className="text-xl font-semibold">{title}</h2>
+            {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          </div>
+          
+          <div className="flex space-x-3">
+            <Button
+              variant="outline"
+              onClick={handleBack}
+              disabled={currentStep === 0 || isProcessing}
+              className="flex items-center gap-2"
+              size="sm"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back
+            </Button>
+            <Button
+              onClick={handleNext}
+              disabled={nextDisabled || currentStep === displaySteps.length - 1 || isProcessing}
+              className="flex items-center gap-2"
+              variant="default"
+              size="sm"
+            >
+              {isProcessing ? 'Processing...' : 'Next'} {!isProcessing && <ArrowRight className="h-4 w-4" />}
+            </Button>
+          </div>
+        </div>
+        
         <div className="flex">
           {showNav && (
-            <div className="w-64 pr-4 pt-2 border-r min-h-[calc(100vh-10rem)]">
+            <div className="w-72 border-r min-h-[calc(100vh-12rem)]">
               <Steps
-                steps={SETUP_STEPS}
+                steps={displaySteps}
                 activeStep={currentStep}
                 completedSteps={completedSteps}
                 onStepClick={handleStepClick}
                 orientation="vertical"
-                className="pl-4"
+                className="px-2 py-4"
               />
             </div>
           )}
 
-          <div className="flex-1 px-6">
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold">{title}</h2>
-              {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
-            </div>
-            
-            <div className="max-w-full mb-6">
-              {children}
-            </div>
-            
-            <div className="flex justify-between py-4 border-t">
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                disabled={currentStep === 0}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" /> Back
-              </Button>
-              <Button
-                onClick={handleNext}
-                disabled={nextDisabled || currentStep === SETUP_STEPS.length - 1}
-                className="flex items-center gap-2"
-              >
-                Next <ArrowRight className="h-4 w-4" />
-              </Button>
+          <div className="flex-1 px-8 py-4 overflow-y-auto min-h-[calc(100vh-12rem)]">
+            <div className="max-w-full">
+              {renderChildren()}
             </div>
           </div>
         </div>

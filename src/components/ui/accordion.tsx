@@ -11,46 +11,65 @@ interface AccordionProps {
     content: React.ReactNode;
     icon?: React.ReactNode;
   }[];
-  defaultOpen?: string | number;
+  defaultOpen?: string | number | string[] | number[] | 'all';
   className?: string;
 }
 
-export function Accordion({ items, defaultOpen, className }: AccordionProps) {
-  const [openItem, setOpenItem] = React.useState<string | number | undefined>(defaultOpen);
+export function Accordion({ items, defaultOpen = 'all', className }: AccordionProps) {
+  const [openItems, setOpenItems] = React.useState<(string | number)[]>(() => {
+    if (defaultOpen === 'all') {
+      return items.map(item => item.id);
+    } else if (Array.isArray(defaultOpen)) {
+      return defaultOpen;
+    } else if (defaultOpen) {
+      return [defaultOpen];
+    }
+    return [];
+  });
 
   const toggleItem = (id: string | number) => {
-    setOpenItem(openItem === id ? undefined : id);
+    setOpenItems(prev => 
+      prev.includes(id) 
+        ? prev.filter(item => item !== id) 
+        : [...prev, id]
+    );
   };
 
   return (
-    <div className={cn("space-y-4", className)}>
-      {items.map((item) => (
-        <div key={item.id} className="border rounded-md overflow-hidden">
-          <button
-            onClick={() => toggleItem(item.id)}
-            className="flex w-full items-center justify-between px-4 py-3 text-left bg-slate-50 hover:bg-slate-100"
-          >
-            <div className="flex items-center gap-3">
-              {item.icon && <div>{item.icon}</div>}
-              <span className="font-medium">{item.title}</span>
-            </div>
-            <ChevronDown 
+    <div className={cn("space-y-2", className)}>
+      {items.map((item) => {
+        const isOpen = openItems.includes(item.id);
+        
+        return (
+          <div key={item.id} className="border border-slate-200 rounded-md overflow-hidden bg-white">
+            <button
+              onClick={() => toggleItem(item.id)}
+              className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                {item.icon && <div className="text-primary">{item.icon}</div>}
+                <span className="font-medium">{item.title}</span>
+              </div>
+              <ChevronDown 
+                className={cn(
+                  "h-4 w-4 text-slate-500 transition-transform",
+                  isOpen && "transform rotate-180"
+                )} 
+              />
+            </button>
+            <div 
               className={cn(
-                "h-4 w-4 transition-transform",
-                openItem === item.id && "transform rotate-180"
-              )} 
-            />
-          </button>
-          <div 
-            className={cn(
-              "px-4 py-3 bg-white transition-all overflow-hidden",
-              openItem === item.id ? "max-h-[1000px]" : "max-h-0 p-0"
-            )}
-          >
-            {item.content}
+                "transition-all duration-200 overflow-hidden",
+                isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+              )}
+            >
+              <div className="px-4 py-3 border-t border-slate-100">
+                {item.content}
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 } 

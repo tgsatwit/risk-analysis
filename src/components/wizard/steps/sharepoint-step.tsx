@@ -59,7 +59,7 @@ export function SharePointStep() {
           <div className="space-y-4">
             <div className="space-y-1">
               <h4 className="text-sm font-medium">Process Documents Library</h4>
-              <p className="text-xs text-muted-foreground">For your business process documentation (about 50 documents)</p>
+              <p className="text-xs text-muted-foreground">For your business process documentation</p>
             </div>
             <div className="space-y-1">
               <h4 className="text-sm font-medium">Reference Documents Library</h4>
@@ -83,7 +83,7 @@ export function SharePointStep() {
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Process Documents</h4>
             <ul className="list-disc pl-5 text-sm space-y-1">
-              <li>All business process documentation PDFs (approximately 50 documents)</li>
+              <li>All business process documentation PDFs</li>
               <li>Use consistent naming conventions for better organization</li>
               <li>Consider adding metadata for improved searchability</li>
             </ul>
