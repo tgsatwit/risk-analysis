@@ -28,7 +28,7 @@ export function CPS230SetupWizard() {
         icon: <FolderTree className="h-5 w-5" />,
         content: (
           <div className="space-y-3">
-            <p>Create a dedicated SharePoint site or document library named "CPS230_RiskAssessments"</p>
+            <p>Create a dedicated SharePoint site or document library named &ldquo;CPS230_RiskAssessments&rdquo;</p>
             <p>Within it, create two main sections:</p>
             <ul className="list-disc pl-6 space-y-1">
               <li><strong>Global References Folder</strong> (/CPS230_Global/): Stores enterprise-wide reference documents such as Risk Taxonomy, ORMF, and CPS 230 Guidelines.</li>

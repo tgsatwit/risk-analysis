@@ -111,7 +111,7 @@ export function DeploymentStep() {
             <div className="space-y-4">
               <div className="pb-3 border-b border-gray-200">
                 <h4 className="text-sm font-medium mb-1">Introductory Workshops</h4>
-                <p className="text-xs text-gray-500">Schedule 1-hour workshops to introduce the Copilot's features and functionality.</p>
+                <p className="text-xs text-gray-500">Schedule 1-hour workshops to introduce the Copilot&apos;s features and functionality.</p>
               </div>
               
               <div className="pb-3 border-b border-gray-200">

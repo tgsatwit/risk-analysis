@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -11,7 +12,6 @@ import { Accordion } from "@/components/ui/accordion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
-// @ts-expect-error - useToast doesn't properly expose type
 import { useToast } from "@/components/ui/use-toast";
 
 import { useSetup } from "@/lib/setup-context";
