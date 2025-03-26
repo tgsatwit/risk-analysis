@@ -16,7 +16,7 @@ export function SharePointStep() {
         completedSteps: [...state.completedSteps, 2]
       });
     }
-  }, []);
+  }, [state.completedSteps, updateState]);
 
   const accordionItems = [
     {

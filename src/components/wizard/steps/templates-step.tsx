@@ -14,7 +14,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export function TemplatesStep() {
   const { state, updateState } = useSetup();
-  // @ts-expect-error - useToast doesn't properly expose type
   const { toast } = useToast();
 
   React.useEffect(() => {
@@ -24,7 +23,7 @@ export function TemplatesStep() {
         completedSteps: [...state.completedSteps, 4]
       });
     }
-  }, []);
+  }, [state.completedSteps, updateState]);
 
   // Sample content from system prompt
   const systemPromptPreview = `# CPS 230 Risk Assessment Copilot - System Prompt
@@ -320,7 +319,7 @@ Always follow this structured approach when analyzing process documentation:
               </div>
             </div>
             <p className="text-sm text-gray-500">
-              This template defines the structure for the Copilot's process analysis outputs.
+              This template defines the structure for the Copilot&apos;s process analysis outputs.
             </p>
             <div className="bg-gray-50 p-4 rounded-md border">
               <pre className="text-xs whitespace-pre-wrap overflow-auto max-h-[300px]">{templatePreview}</pre>
@@ -358,14 +357,14 @@ Always follow this structured approach when analyzing process documentation:
             <FileText className="h-4 w-4 text-blue-500 mt-0.5" />
             <div>
               <p className="text-sm font-medium">System Prompt</p>
-              <p className="text-xs text-gray-500">Paste this into the "Base Instructions" section of your Copilot configuration.</p>
+              <p className="text-xs text-gray-500">Paste this into the &ldquo;Base Instructions&rdquo; section of your Copilot configuration.</p>
             </div>
           </div>
           <div className="flex items-start gap-2">
             <FileText className="h-4 w-4 text-blue-500 mt-0.5" />
             <div>
               <p className="text-sm font-medium">Starter Prompts</p>
-              <p className="text-xs text-gray-500">Use these in the "Greeting Message" and "Conversation Starters" sections.</p>
+              <p className="text-xs text-gray-500">Use these in the &ldquo;Greeting Message&rdquo; and &ldquo;Conversation Starters&rdquo; sections.</p>
             </div>
           </div>
           <div className="flex items-start gap-2">

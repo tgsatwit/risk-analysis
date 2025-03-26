@@ -27,14 +27,13 @@ export function ProcessWalkthroughWizard() {
 
     // Initialize local state from parent state
     useEffect(() => {
-      setLocalProcessId(processDetails.processId);
-      setLocalProcessName(processDetails.processName);
-      setLocalFullProcessName(processDetails.fullProcessName);
-      
       if (processDetails.processId && processDetails.processName) {
+        setLocalProcessId(processDetails.processId);
+        setLocalProcessName(processDetails.processName);
+        setLocalFullProcessName(processDetails.fullProcessName);
         setFormComplete(true);
       }
-    }, [processDetails]);
+    }, []);
 
     // Memoize event handlers
     const handleProcessIdChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {

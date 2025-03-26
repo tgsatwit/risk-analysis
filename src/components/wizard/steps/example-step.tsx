@@ -12,12 +12,12 @@ export function ExampleStep() {
 
   React.useEffect(() => {
     // Mark this step as viewed when component mounts
-    if (!state.completedSteps.includes(6)) {
+    if (!state.completedSteps.includes(2)) {
       updateState({
-        completedSteps: [...state.completedSteps, 6]
+        completedSteps: [...state.completedSteps, 2]
       });
     }
-  }, []);
+  }, [state.completedSteps, updateState]);
 
   const accordionItems = [
     {

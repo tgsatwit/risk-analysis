@@ -19,15 +19,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Accordion } from '@/components/ui/accordion';
 import { useToast } from '@/components/ui/use-toast';
 
-// Starter prompts and system prompt content
-// @ts-expect-error - Suppressing error about starterPrompts.md not being a module
-import starterPrompts from "../../../data/starterPrompts.md";
-// @ts-expect-error - Suppressing error about systemPrompt.md not being a module
-import systemPrompt from "../../../data/systemPrompt.md";
-
 export function CopilotSetupStep() {
   const { state, updateState } = useSetup();
-  //@ts-ignore
   const { toast } = useToast();
 
   React.useEffect(() => {
@@ -37,7 +30,7 @@ export function CopilotSetupStep() {
         completedSteps: [...state.completedSteps, 3]
       });
     }
-  }, []);
+  }, [state.completedSteps, updateState]);
 
   const fullSystemPrompt = `# CPS 230 Risk Assessment Copilot - System Prompt
 
@@ -289,7 +282,7 @@ Always follow this structured approach when analyzing process documentation:
           </p>
         </div>
         <p className="text-sm text-gray-500 pl-6">
-          You'll need a Microsoft 365 account with appropriate permissions to create and manage Copilot agents.
+          You&apos;ll need a Microsoft 365 account with appropriate permissions to create and manage Copilot agents.
         </p>
       </div>
 

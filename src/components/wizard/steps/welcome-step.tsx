@@ -16,7 +16,7 @@ export function WelcomeStep() {
         completedSteps: [...state.completedSteps, 0]
       });
     }
-  }, []);
+  }, [state.completedSteps, updateState]);
 
   function handleNext() {
     updateState({

@@ -16,7 +16,7 @@ export function OverviewStep() {
         completedSteps: [...state.completedSteps, 1]
       });
     }
-  }, []);
+  }, [state.completedSteps, updateState]);
 
   const accordionItems = [
     {
@@ -94,7 +94,7 @@ export function OverviewStep() {
                 </li>
                 <li className="flex items-start gap-2 text-sm">
                   <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5" />
-                  <span><span className="font-medium">Risk Taxonomy</span> - Organization's risk category definitions</span>
+                  <span><span className="font-medium">Risk Taxonomy</span> - Organization&apos;s risk category definitions</span>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
                   <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5" />
@@ -142,7 +142,7 @@ export function OverviewStep() {
             
             <div className="border rounded-md p-3 bg-gray-50">
               <h4 className="text-sm font-medium">6. Gap Analysis</h4>
-              <p className="text-xs text-muted-foreground">Compare expected controls to what's documented in the process</p>
+              <p className="text-xs text-muted-foreground">Compare expected controls to what&apos;s documented in the process</p>
             </div>
           </div>
         </div>

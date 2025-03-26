@@ -154,17 +154,17 @@ export function CPS230SetupWizard() {
           <div className="space-y-3">
             <ol className="list-decimal pl-6 space-y-2">
               <li>Log in to <a href="https://copilotstudio.microsoft.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Microsoft Copilot Studio</a></li>
-              <li>Click "New" and select "Copilot"</li>
+              <li>Click &ldquo;New&rdquo; and select &ldquo;Copilot&rdquo;</li>
               <li>Name your Copilot: <code>CPS230 {title}</code></li>
               <li>Description: <code>{description}</code></li>
-              <li>Click "Create"</li>
-              <li>Go to "Generative conversations" in the left sidebar</li>
-              <li>Click on "System message"</li>
+              <li>Click &ldquo;Create&rdquo;</li>
+              <li>Go to &ldquo;Generative conversations&rdquo; in the left sidebar</li>
+              <li>Click on &ldquo;System message&rdquo;</li>
               <li>Copy and paste the system prompt below</li>
               <li>Configure knowledge sources to include your SharePoint process documentation:
                 <ul className="list-disc pl-6 mt-1 text-sm">
-                  <li>Click on "Add" under Knowledge sources</li>
-                  <li>Select "SharePoint" as the source type</li>
+                  <li>Click on &ldquo;Add&rdquo; under Knowledge sources</li>
+                  <li>Select &ldquo;SharePoint&rdquo; as the source type</li>
                   <li>Connect to your SharePoint site containing the process documentation</li>
                   <li>For Agent 1 & 2: Point to both process docs and the global reference folder</li>
                   <li>For Agents 3-6: Ensure they can access both current and previous step outputs</li>

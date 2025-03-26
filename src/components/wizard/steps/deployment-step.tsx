@@ -26,7 +26,7 @@ export function DeploymentStep() {
         completedSteps: [...state.completedSteps, 5]
       });
     }
-  }, []);
+  }, [state.completedSteps, updateState]);
 
   const accordionItems = [
     {
@@ -41,7 +41,7 @@ export function DeploymentStep() {
           <div className="bg-gray-50 p-4 rounded-md border space-y-3">
             <ul className="list-disc pl-5 text-sm text-gray-600 space-y-2">
               <li>
-                <span className="font-medium">Microsoft Teams:</span> Add the Copilot as an app in your team's channels
+                <span className="font-medium">Microsoft Teams:</span> Add the Copilot as an app in your team&apos;s channels
               </li>
               <li>
                 <span className="font-medium">Direct Link:</span> Share the direct URL to the Copilot
@@ -90,7 +90,7 @@ export function DeploymentStep() {
               <div>
                 <h4 className="text-sm font-medium mb-2">FAQ Document</h4>
                 <p className="text-xs text-gray-500">
-                  Prepare answers to common questions about the Copilot's capabilities, limitations, and best practices.
+                  Prepare answers to common questions about the Copilot&apos;s capabilities, limitations, and best practices.
                 </p>
               </div>
             </div>
