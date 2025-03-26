@@ -55,7 +55,7 @@ export function ExampleStep() {
               </div>
               <div className="flex-1 bg-purple-50 p-3 rounded-lg">
                 <p className="text-sm mb-2">
-                  I'd be happy to help analyze the member onboarding process for CPS 230 compliance. I'll start with a summary of the process, and then we can work through the 6-step assessment approach. Would you like me to begin with the Process Summary?
+                  I&apos;d be happy to help analyze the member onboarding process for CPS 230 compliance. I&apos;ll start with a summary of the process, and then we can work through the 6-step assessment approach. Would you like me to begin with the Process Summary?
                 </p>
               </div>
             </div>

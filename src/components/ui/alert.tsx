@@ -2,7 +2,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Info } from "lucide-react"
 
-interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {}
+type AlertProps = React.HTMLAttributes<HTMLDivElement>
 
 export function Alert({ className, children, ...props }: AlertProps) {
   return (
@@ -20,7 +20,7 @@ export function Alert({ className, children, ...props }: AlertProps) {
   )
 }
 
-interface AlertDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
+type AlertDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>
 
 export function AlertDescription({
   className,

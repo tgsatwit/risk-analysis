@@ -18,7 +18,6 @@ interface WizardLayoutProps {
   nextDisabled?: boolean;
   showNav?: boolean;
   steps?: StepItem[];
-  customStepLabels?: boolean;
 }
 
 export function WizardLayout({
@@ -30,7 +29,6 @@ export function WizardLayout({
   nextDisabled = false,
   showNav = true,
   steps,
-  customStepLabels = false,
 }: WizardLayoutProps) {
   const { state, updateState } = useSetup();
   const { currentStep, completedSteps } = state;

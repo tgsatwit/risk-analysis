@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useSetup } from '@/lib/setup-context';
-import { Folder, Users, FileText, BookOpen, CheckCircle2, ListTodo } from 'lucide-react';
 import { Accordion } from '@/components/ui/accordion';
+import { FileText, CheckCircle2, ListTodo, Folder } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export function OverviewStep() {

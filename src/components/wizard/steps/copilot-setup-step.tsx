@@ -19,6 +19,12 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Accordion } from '@/components/ui/accordion';
 import { useToast } from '@/components/ui/use-toast';
 
+// Starter prompts and system prompt content
+// @ts-expect-error - Suppressing error about starterPrompts.md not being a module
+import starterPrompts from "../../../data/starterPrompts.md";
+// @ts-expect-error - Suppressing error about systemPrompt.md not being a module
+import systemPrompt from "../../../data/systemPrompt.md";
+
 export function CopilotSetupStep() {
   const { state, updateState } = useSetup();
   //@ts-ignore
@@ -100,15 +106,15 @@ Always follow this structured approach when analyzing process documentation:
             </div>
             <div className="flex items-start gap-2">
               <ArrowRightCircle className="h-4 w-4 text-blue-500 mt-0.5" />
-              <p className="text-sm">Click "Create a Copilot" on the dashboard</p>
+              <p className="text-sm">Click &ldquo;Create a Copilot&rdquo; on the dashboard</p>
             </div>
             <div className="flex items-start gap-2">
               <ArrowRightCircle className="h-4 w-4 text-blue-500 mt-0.5" />
-              <p className="text-sm">Name your Copilot "CPS 230 Risk Assessment Copilot"</p>
+              <p className="text-sm">Name your Copilot &ldquo;CPS 230 Risk Assessment Copilot&rdquo;</p>
             </div>
             <div className="flex items-start gap-2">
               <ArrowRightCircle className="h-4 w-4 text-blue-500 mt-0.5" />
-              <p className="text-sm">Add a description: "A specialized assistant for conducting CPS 230 risk assessments for Australian superannuation companies"</p>
+              <p className="text-sm">Add a description: &ldquo;A specialized assistant for conducting CPS 230 risk assessments for Australian superannuation companies&rdquo;</p>
             </div>
             <div className="flex items-start gap-2">
               <ArrowRightCircle className="h-4 w-4 text-blue-500 mt-0.5" />
@@ -131,7 +137,7 @@ Always follow this structured approach when analyzing process documentation:
             <div className="flex items-start gap-2">
               <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5" />
               <div>
-                <p className="text-sm">Navigate to "Copilot configuration" → "Base instructions"</p>
+                <p className="text-sm">Navigate to &ldquo;Copilot configuration&rdquo; → &ldquo;Base instructions&rdquo;</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
@@ -171,7 +177,7 @@ Always follow this structured approach when analyzing process documentation:
               <div className="space-y-2 pl-1">
                 <div className="flex items-start gap-2">
                   <ArrowRightCircle className="h-4 w-4 text-blue-500 mt-0.5" />
-                  <p className="text-sm">Go to "Knowledge" → "Add a data source" → "SharePoint"</p>
+                  <p className="text-sm">Go to &ldquo;Knowledge&rdquo; → &ldquo;Add a data source&rdquo; → &ldquo;SharePoint&rdquo;</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <ArrowRightCircle className="h-4 w-4 text-blue-500 mt-0.5" />
@@ -179,7 +185,7 @@ Always follow this structured approach when analyzing process documentation:
                 </div>
                 <div className="flex items-start gap-2">
                   <ArrowRightCircle className="h-4 w-4 text-blue-500 mt-0.5" />
-                  <p className="text-sm">Name it "Process Documentation"</p>
+                  <p className="text-sm">Name it &ldquo;Process Documentation&rdquo;</p>
                 </div>
               </div>
             </div>
@@ -193,7 +199,7 @@ Always follow this structured approach when analyzing process documentation:
                 </div>
                 <div className="flex items-start gap-2">
                   <ArrowRightCircle className="h-4 w-4 text-blue-500 mt-0.5" />
-                  <p className="text-sm">Name it "Reference Documents"</p>
+                  <p className="text-sm">Name it &ldquo;Reference Documents&rdquo;</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <ArrowRightCircle className="h-4 w-4 text-blue-500 mt-0.5" />
@@ -219,14 +225,14 @@ Always follow this structured approach when analyzing process documentation:
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5" />
                 <div>
-                  <p className="text-sm">Navigate to "Copilot configuration" → "Greeting message"</p>
-                  <p className="text-xs text-gray-500 mt-1">Add a welcoming message that introduces the Copilot's purpose</p>
+                  <p className="text-sm">Navigate to &ldquo;Copilot configuration&rdquo; → &ldquo;Greeting message&rdquo;</p>
+                  <p className="text-xs text-gray-500 mt-1">Add a welcoming message that introduces the Copilot&apos;s purpose</p>
                 </div>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5" />
                 <div>
-                  <p className="text-sm">Go to "Conversation starters"</p>
+                  <p className="text-sm">Go to &ldquo;Conversation starters&rdquo;</p>
                   <p className="text-xs text-gray-500 mt-1">Add examples from the <span className="font-medium">starter-prompts.md</span> file</p>
                 </div>
               </div>

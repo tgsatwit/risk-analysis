@@ -5,7 +5,6 @@ import { useSetup } from '@/lib/setup-context';
 import { 
   FileText, 
   Download,
-  ExternalLink,
   Copy
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export function TemplatesStep() {
   const { state, updateState } = useSetup();
-  //@ts-ignore
+  // @ts-expect-error - useToast doesn't properly expose type
   const { toast } = useToast();
 
   React.useEffect(() => {
@@ -236,14 +235,6 @@ Always follow this structured approach when analyzing process documentation:
 - Regulatory strategy
 - Growth management
 - Resource allocation`;
-
-  const handleCopyTemplate = (templateType: string) => {
-    // In a real implementation, this would copy the full template content
-    toast({
-      title: "Template Copied",
-      description: `The ${templateType} has been copied to your clipboard.`,
-    });
-  };
 
   const handleCopyText = (text: string, type: string) => {
     navigator.clipboard.writeText(text);

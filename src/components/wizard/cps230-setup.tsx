@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { WizardLayout } from './wizard-layout';
 import { CPS230_SETUP_STEPS, AGENT_SYSTEM_PROMPTS } from '@/lib/cps230-constants';
 import { Accordion } from '@/components/ui/accordion';
-import { Clipboard, ClipboardCheck, FolderTree, Bot, CheckCircle, Info, FileText } from 'lucide-react';
+import { Clipboard, ClipboardCheck, FolderTree, Bot, Info, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function CPS230SetupWizard() {
@@ -212,60 +212,60 @@ export function CPS230SetupWizard() {
             {agentNumber === 1 && (
               <>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "Give me an executive summary of the [Process Name]."
+                  &ldquo;Give me an executive summary of the [Process Name].&rdquo;
                 </div>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "Summarize the [Process Name] process for a CPS 230 risk workshop."
+                  &ldquo;Summarize the [Process Name] process for a CPS 230 risk workshop.&rdquo;
                 </div>
               </>
             )}
             {agentNumber === 2 && (
               <>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "Create a process detail table for [Process Name] as per CPS 230 template."
+                  &ldquo;Create a process detail table for [Process Name] as per CPS 230 template.&rdquo;
                 </div>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "List all the steps of [Process Name] with purpose, actors, systems, etc., in a table."
+                  &ldquo;List all the steps of [Process Name] with purpose, actors, systems, etc., in a table.&rdquo;
                 </div>
               </>
             )}
             {agentNumber === 3 && (
               <>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "What are the potential failure points in each step of [Process Name]?"
+                  &ldquo;What are the potential failure points in each step of [Process Name]?&rdquo;
                 </div>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "Analyze [Process Name] for vulnerabilities or things that could go wrong at each step."
+                  &ldquo;Analyze [Process Name] for vulnerabilities or things that could go wrong at each step.&rdquo;
                 </div>
               </>
             )}
             {agentNumber === 4 && (
               <>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "Consolidate the failure points into a risk register for [Process Name]."
+                  &ldquo;Consolidate the failure points into a risk register for [Process Name].&rdquo;
                 </div>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "Generate a CPS 230 risk register: list top risks for [Process Name], with statements and categories."
+                  &ldquo;Generate a CPS 230 risk register: list top risks for [Process Name], with statements and categories.&rdquo;
                 </div>
               </>
             )}
             {agentNumber === 5 && (
               <>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "For each risk in our register, list expected controls with their type and category."
+                  &ldquo;For each risk in our register, list expected controls with their type and category.&rdquo;
                 </div>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "What controls should we have for the risks identified in [Process Name]?"
+                  &ldquo;What controls should we have for the risks identified in [Process Name]?&rdquo;
                 </div>
               </>
             )}
             {agentNumber === 6 && (
               <>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "Check the process for evidence of the expected controls for [Process Name] and identify any gaps."
+                  &ldquo;Check the process for evidence of the expected controls for [Process Name] and identify any gaps.&rdquo;
                 </div>
                 <div className="bg-slate-50 p-2 rounded border text-sm">
-                  "Perform a control gap analysis for [Process Name] based on our expected controls."
+                  &ldquo;Perform a control gap analysis for [Process Name] based on our expected controls.&rdquo;
                 </div>
               </>
             )}

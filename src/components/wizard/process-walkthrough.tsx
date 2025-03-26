@@ -168,13 +168,13 @@ export function ProcessWalkthroughWizard() {
                 <ul className="list-disc pl-6 text-sm text-muted-foreground mt-1 space-y-1">
                   <li>The global reference folder (/CPS230_Global/)</li>
                   <li>The process-specific folder you just created</li>
-                  <li>All documentation you've uploaded</li>
+                  <li>All documentation you&apos;ve uploaded</li>
                 </ul>
               </li>
               <li>
                 <span className="font-medium">Create a tracking entry</span>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Add this process to your master tracking spreadsheet with fields for each step's completion status.
+                  Add this process to your master tracking spreadsheet with fields for each step&apos;s completion status.
                 </p>
               </li>
             </ol>

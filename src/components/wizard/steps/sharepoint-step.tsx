@@ -37,7 +37,7 @@ export function SharePointStep() {
               <div className="rounded-full border h-5 w-5 flex items-center justify-center mt-0.5">
                 <span className="text-xs">2</span>
               </div>
-              <span>Create a new site with a descriptive name (e.g., "CPS230-Risk-Assessment")</span>
+              <span>Create a new site with a descriptive name (e.g., &ldquo;CPS230-Risk-Assessment&rdquo;)</span>
             </li>
             <li className="flex items-start gap-2">
               <div className="rounded-full border h-5 w-5 flex items-center justify-center mt-0.5">
