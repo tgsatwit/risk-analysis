@@ -2,13 +2,17 @@
 
 import React, { useState } from 'react';
 import { WizardLayout } from './wizard-layout';
-import { CPS230_SETUP_STEPS, AGENT_SYSTEM_PROMPTS } from '@/lib/cps230-constants';
+import { AGENT_SYSTEM_PROMPTS } from '@/lib/cps230-constants';
 import { Accordion } from '@/components/ui/accordion';
 import { Clipboard, ClipboardCheck, FolderTree, Bot, Info, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useVersion } from '@/lib/version-context';
+import { ConsolidatedAgentStep } from './steps/consolidated-agent-step';
+import { ControlRegisterStep } from './steps/control-register-step';
 
 export function CPS230SetupWizard() {
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
+  const { currentVersion } = useVersion();
   
   const handleCopyPrompt = (key: string) => {
     const prompt = AGENT_SYSTEM_PROMPTS[key as keyof typeof AGENT_SYSTEM_PROMPTS];
@@ -143,7 +147,7 @@ export function CPS230SetupWizard() {
     );
   };
 
-  // Step 1-6: Copilot Agent Creation Steps
+  // Step 1-6: Copilot Agent Creation Steps for V1
   const AgentCreationStep = ({ agentNumber, title, description, promptKey }: { agentNumber: number, title: string, description: string, promptKey: string }) => {
     const accordionItems = [
       {
@@ -161,15 +165,7 @@ export function CPS230SetupWizard() {
               <li>Go to &ldquo;Generative conversations&rdquo; in the left sidebar</li>
               <li>Click on &ldquo;System message&rdquo;</li>
               <li>Copy and paste the system prompt below</li>
-              <li>Configure knowledge sources to include your SharePoint process documentation:
-                <ul className="list-disc pl-6 mt-1 text-sm">
-                  <li>Click on &ldquo;Add&rdquo; under Knowledge sources</li>
-                  <li>Select &ldquo;SharePoint&rdquo; as the source type</li>
-                  <li>Connect to your SharePoint site containing the process documentation</li>
-                  <li>For Agent 1 & 2: Point to both process docs and the global reference folder</li>
-                  <li>For Agents 3-6: Ensure they can access both current and previous step outputs</li>
-                </ul>
-              </li>
+              <li>Configure knowledge sources to include your SharePoint process documentation</li>
               <li>Save and publish your Copilot</li>
             </ol>
           </div>
@@ -288,32 +284,57 @@ export function CPS230SetupWizard() {
     );
   };
 
+  // V2 Steps
+  
+  // Render appropriate step based on version and current step
   const renderStep = (currentStep: number) => {
-    switch (currentStep) {
-      case 0:
-        return <SharePointStructureStep />;
-      case 1:
-        return <AgentCreationStep agentNumber={1} title="Process Summary Agent" description="Executive overview of business process" promptKey="processSummary" />;
-      case 2:
-        return <AgentCreationStep agentNumber={2} title="Process Detail Table Agent" description="Detailed breakdown of process steps" promptKey="processDetailTable" />;
-      case 3:
-        return <AgentCreationStep agentNumber={3} title="Failure Point Analysis Agent" description="Identification of potential failure scenarios" promptKey="failurePointAnalysis" />;
-      case 4:
-        return <AgentCreationStep agentNumber={4} title="Risk Consolidation Agent" description="Consolidated risk register creation" promptKey="riskConsolidation" />;
-      case 5:
-        return <AgentCreationStep agentNumber={5} title="Expected Controls Agent" description="Identification of expected controls for each risk" promptKey="expectedControls" />;
-      case 6:
-        return <AgentCreationStep agentNumber={6} title="Control Gap Analysis Agent" description="Analysis of control gaps in the process" promptKey="controlGapAnalysis" />;
-      default:
-        return <SharePointStructureStep />;
+    // Version 1 (Original)
+    if (currentVersion.id === "v1") {
+      switch (currentStep) {
+        case 0:
+          return <SharePointStructureStep />;
+        case 1:
+          return <AgentCreationStep agentNumber={1} title="Process Summary Agent" description="Executive overview of business process" promptKey="processSummary" />;
+        case 2:
+          return <AgentCreationStep agentNumber={2} title="Process Detail Table Agent" description="Detailed breakdown of process steps" promptKey="processDetailTable" />;
+        case 3:
+          return <AgentCreationStep agentNumber={3} title="Failure Point Analysis Agent" description="Identification of potential failure scenarios" promptKey="failurePointAnalysis" />;
+        case 4:
+          return <AgentCreationStep agentNumber={4} title="Risk Consolidation Agent" description="Consolidated risk register creation" promptKey="riskConsolidation" />;
+        case 5:
+          return <AgentCreationStep agentNumber={5} title="Expected Controls Agent" description="Identification of expected controls for each risk" promptKey="expectedControls" />;
+        case 6:
+          return <AgentCreationStep agentNumber={6} title="Control Gap Analysis Agent" description="Analysis of control gaps in the process" promptKey="controlGapAnalysis" />;
+        default:
+          return <SharePointStructureStep />;
+      }
     }
+    
+    // Version 2 (Refined)
+    else if (currentVersion.id === "v2") {
+      switch (currentStep) {
+        case 0:
+          return <SharePointStructureStep />;
+        case 1:
+          return <ConsolidatedAgentStep />;
+        case 2:
+          return <ControlRegisterStep />;
+        case 3:
+          return <AgentCreationStep agentNumber={0} title="Templates & Prompts" description="Example prompts for each analysis step" promptKey="processSummary" />;
+        default:
+          return <SharePointStructureStep />;
+      }
+    }
+    
+    // Default fallback
+    return <SharePointStructureStep />;
   };
 
   return (
     <WizardLayout
       title="CPS 230 Risk Assessment System Setup"
       description="Set up Microsoft Copilot Studio agents and folder structure for CPS 230 operational risk assessments"
-      steps={CPS230_SETUP_STEPS}
+      steps={currentVersion.setupSteps}
     >
       {({ state }) => renderStep(state.currentStep)}
     </WizardLayout>

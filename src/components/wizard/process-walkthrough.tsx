@@ -2,12 +2,12 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { WizardLayout } from './wizard-layout';
-import { CPS230_WALKTHROUGH_STEPS } from '@/lib/cps230-constants';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Clipboard, ClipboardCheck, FileText, Info, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Clipboard, ClipboardCheck, FileText, Info, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Accordion } from '@/components/ui/accordion';
+import { useVersion } from '@/lib/version-context';
 
 export function ProcessWalkthroughWizard() {
   // Store processId and processName at the parent level for use in other steps
@@ -17,8 +17,10 @@ export function ProcessWalkthroughWizard() {
     fullProcessName: ''
   });
   
+  const { currentVersion } = useVersion();
+  
   // Preparation Step
-  const PreparationStep = () => {
+  const PreparationStep = ({ version = "v1" }: { version?: string }) => {
     // Local state for form fields to prevent parent re-renders during typing
     const [localProcessId, setLocalProcessId] = useState(processDetails.processId);
     const [localProcessName, setLocalProcessName] = useState(processDetails.processName);
@@ -83,7 +85,8 @@ export function ProcessWalkthroughWizard() {
       };
     }, [localProcessId, localProcessName, formComplete, localFullProcessName]);
 
-    const accordionItems = [
+    // Common accordion items for both versions
+    const commonAccordionItems = [
       {
         id: 'process-details',
         title: '1. Process Identification',
@@ -181,22 +184,6 @@ export function ProcessWalkthroughWizard() {
         )
       },
       {
-        id: 'important-notes',
-        title: '3. Before You Begin',
-        icon: <AlertTriangle className="h-5 w-5" />,
-        content: (
-          <div className="space-y-3">
-            <ul className="space-y-2 text-sm">
-              <li>Ensure you have access to all six Copilot agents created in the setup process</li>
-              <li>Have your process documentation ready and accessible</li>
-              <li>Make sure your process ID is unique and not already used for another process</li>
-              <li>Verify you understand the CPS 230 risk assessment methodology</li>
-              <li>Prepare for the time commitment – a full assessment with six steps typically takes 2-3 hours</li>
-            </ul>
-          </div>
-        )
-      },
-      {
         id: 'documentation-standards',
         title: '4. Documentation Standards',
         icon: <Info className="h-5 w-5" />,
@@ -217,6 +204,79 @@ export function ProcessWalkthroughWizard() {
       }
     ];
 
+    // Version-specific "Before You Begin" section
+    const beforeYouBeginV1 = {
+      id: 'important-notes',
+      title: '3. Before You Begin',
+      icon: <AlertTriangle className="h-5 w-5" />,
+      content: (
+        <div className="space-y-3">
+          <ul className="space-y-2 text-sm">
+            <li>Ensure you have access to all six Copilot agents created in the setup process</li>
+            <li>Have your process documentation ready and accessible</li>
+            <li>Make sure your process ID is unique and not already used for another process</li>
+            <li>Verify you understand the CPS 230 risk assessment methodology</li>
+            <li>Prepare for the time commitment – a full assessment with six steps typically takes 2-3 hours</li>
+          </ul>
+        </div>
+      )
+    };
+
+    const beforeYouBeginV2 = {
+      id: 'important-notes',
+      title: '3. Before You Begin',
+      icon: <AlertTriangle className="h-5 w-5" />,
+      content: (
+        <div className="space-y-3">
+          <ul className="space-y-2 text-sm">
+            <li>Ensure you have access to the consolidated CPS 230 Risk Assessment Agent created in the setup process</li>
+            <li>Have your process documentation ready and accessible</li>
+            <li>Make sure your control register is uploaded and accessible to the agent</li>
+            <li>Verify you understand the refined v2 assessment methodology which offers improved risk consolidation and alignment with CPS 230 requirements</li>
+            <li>Remember the key methodological improvements:
+              <ul className="list-disc pl-6 mt-1 text-xs text-muted-foreground">
+                <li>Detailed process analysis first, then summary (flipped from v1)</li>
+                <li>Early control identification from process docs</li>
+                <li>Common failure types across steps (reduced repetition)</li>
+                <li>Enhanced risk consolidation with CPS 230 alignment</li>
+                <li>Comprehensive control mapping and gap analysis</li>
+              </ul>
+            </li>
+            <li>Prepare for the time commitment – a full assessment typically takes 2-3 hours</li>
+          </ul>
+        </div>
+      )
+    };
+
+    // V2-specific accordion items (if any)
+    const v2AccordionItems = version === "v2" 
+      ? [
+          {
+            id: 'archer-controls',
+            title: '5. Control Register Access',
+            icon: <Info className="h-5 w-5" />,
+            content: (
+              <div className="space-y-3">
+                <p className="text-sm">Ensure your Copilot agent has access to:</p>
+                <ul className="text-sm list-disc pl-6 space-y-1">
+                  <li>The control register uploaded in the System Setup phase</li>
+                  <li>Process documentation relevant to this assessment</li>
+                </ul>
+              </div>
+            )
+          }
+        ] 
+      : [];
+
+    // Combine basic accordion items with version-specific ones
+    const accordionItems = [
+      ...commonAccordionItems.slice(0, 2),
+      version === "v2" ? beforeYouBeginV2 : beforeYouBeginV1,
+      ...commonAccordionItems.slice(2),
+      // Add version-specific items
+      ...(version === "v2" ? v2AccordionItems : [])
+    ];
+
     return (
       <div className="space-y-6">
         <div className="mb-6">
@@ -231,7 +291,7 @@ export function ProcessWalkthroughWizard() {
     );
   };
 
-  // Generic step for agent usage
+  // Generic step for agent usage - used by both v1 and v2
   const AgentStep = ({ 
     stepNumber, 
     agentName, 
@@ -239,7 +299,8 @@ export function ProcessWalkthroughWizard() {
     inputFile, 
     outputFile,
     promptExamples,
-    tips
+    tips,
+    version = "v1"
   }: { 
     stepNumber: number;
     agentName: string;
@@ -248,6 +309,7 @@ export function ProcessWalkthroughWizard() {
     outputFile: string;
     promptExamples: string[];
     tips: string[];
+    version?: string;
   }) => {
     const [copied, setCopied] = useState<string | null>(null);
     
@@ -284,13 +346,25 @@ export function ProcessWalkthroughWizard() {
         icon: <CheckCircle2 className="h-5 w-5" />,
         content: (
           <div className="space-y-3">
-            <ol className="list-decimal pl-6 space-y-2">
-              <li>Open the <span className="font-medium">CPS230 {agentName}</span> agent in Microsoft Copilot Studio</li>
-              <li>Enter one of the prompt examples below (replacing [Process Name] with your process name)</li>
-              <li>Ensure the agent has access to the input document</li>
-              <li>Review the output for accuracy and completeness</li>
-              <li>Save the output document with the specified filename</li>
-            </ol>
+            {version === "v2" ? (
+              <ol className="list-decimal pl-6 space-y-2">
+                <li>Open the <span className="font-medium">CPS230 Risk Assessment Agent</span> in Microsoft Copilot Studio</li>
+                <li>Enter one of the prompt examples below (replacing [Process Name] with your process name)</li>
+                <li>Reference the specific section of the system prompt that is relevant to this step</li>
+                <li>For example: "Please help me with step {stepNumber} of the CPS 230 assessment - {agentName} for {processDetails.processName || '[Process Name]'}"</li>
+                <li>Ensure the agent has access to the input document</li>
+                <li>Review the output for accuracy and completeness</li>
+                <li>Save the output document with the specified filename</li>
+              </ol>
+            ) : (
+              <ol className="list-decimal pl-6 space-y-2">
+                <li>Open the <span className="font-medium">CPS230 {agentName}</span> agent in Microsoft Copilot Studio</li>
+                <li>Enter one of the prompt examples below (replacing [Process Name] with your process name)</li>
+                <li>Ensure the agent has access to the input document</li>
+                <li>Review the output for accuracy and completeness</li>
+                <li>Save the output document with the specified filename</li>
+              </ol>
+            )}
           </div>
         )
       },
@@ -387,9 +461,213 @@ export function ProcessWalkthroughWizard() {
     );
   };
 
+  // V2-specific steps
+  const ProcessDetailStep = () => {
+    return (
+      <AgentStep 
+        stepNumber={1}
+        agentName="Process Detail"
+        description="Create a detailed breakdown of process steps"
+        inputFile="Process documentation (various formats)"
+        outputFile={`P[ID]_[ProcessName]_v2_Step1_ProcessDetail.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+        promptExamples={[
+          `Create a detailed process breakdown table for ${processDetails.processName || '[Process Name]'} with a maximum of 10 steps, including Step Name, Purpose, Activities, Systems, Roles, Tools, and Dependencies.`,
+          `Please help with step 1 of the CPS 230 assessment - create a Process Detail Table for ${processDetails.processName || '[Process Name]'} according to the refined v2 methodology.`,
+          `Following the Process Detail Table instructions in your system prompt, break down the ${processDetails.processName || '[Process Name]'} process into maximum 10 steps with all required columns.`
+        ]}
+        tips={[
+          "Break down the process into no more than 10 distinct steps",
+          "Ensure every column is filled for each step",
+          "Be specific about systems, roles, and dependencies",
+          "Include key decision points and handoffs in your analysis",
+          "Remember: in v2, this step must come BEFORE creating the executive summary"
+        ]}
+        version="v2"
+      />
+    );
+  };
+  
+  const ExecutiveSummaryStep = () => {
+    return (
+      <AgentStep 
+        stepNumber={2}
+        agentName="Executive Summary"
+        description="Create a process summary based on the detailed breakdown"
+        inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step1_ProcessDetail.docx`}
+        outputFile={`P[ID]_[ProcessName]_v2_Step2_ExecSummary.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+        promptExamples={[
+          `Using the process detail table from step 1, create an executive summary (250-300 words) of the ${processDetails.processName || '[Process Name]'} process with overall purpose, inputs/outputs, dependencies, and decision points.`,
+          `Please help with step 2 of the CPS 230 assessment - create an Executive Summary for ${processDetails.processName || '[Process Name]'} based on the detailed breakdown from step 1.`,
+          `Following the Executive Summary instructions in your system prompt, create a summary of ${processDetails.processName || '[Process Name]'} suitable for executive audiences.`
+        ]}
+        tips={[
+          "The executive summary should be derived from the detailed process table (not created independently)",
+          "Keep it concise (250-300 words) but comprehensive",
+          "Focus on the overall purpose, key inputs/outputs, and critical dependencies",
+          "Include major decision points and systems involved",
+          "Make it suitable for executive audiences who may not know the technical details"
+        ]}
+        version="v2"
+      />
+    );
+  };
+  
+  const ControlIdentificationStep = () => {
+    return (
+      <AgentStep 
+        stepNumber={3}
+        agentName="Control Identification"
+        description="Extract controls directly from the process documentation"
+        inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step1_ProcessDetail.docx`}
+        outputFile={`P[ID]_[ProcessName]_v2_Step3_Controls.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+        promptExamples={[
+          `Extract a standalone list of all tools, templates, and potential controls identified in the ${processDetails.processName || '[Process Name]'} process documentation, noting where each control appears.`,
+          `Please help with step 3 of the CPS 230 assessment - identify all controls in the ${processDetails.processName || '[Process Name]'} process and classify them as preventative or detective.`,
+          `Following the Control Identification instructions in your system prompt, create a reference list of all control activities in the ${processDetails.processName || '[Process Name]'} process.`
+        ]}
+        tips={[
+          "Focus on identifying all potential control activities in the process",
+          "Note specifically where in the process each control appears (which step)",
+          "Classify controls as preventative or detective where possible",
+          "Consider implicit controls that might not be explicitly documented",
+          "This early control identification will be important for later comparison with the Archer control register"
+        ]}
+        version="v2"
+      />
+    );
+  };
+  
+  const FailureAnalysisStep = () => {
+    return (
+      <AgentStep 
+        stepNumber={4}
+        agentName="Failure Analysis"
+        description="Identify common failure types across the process"
+        inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step1_ProcessDetail.docx`}
+        outputFile={`P[ID]_[ProcessName]_v2_Step4_FailureAnalysis.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+        promptExamples={[
+          `Identify common failure types that could occur across multiple steps of the ${processDetails.processName || '[Process Name]'} process and group them by category.`,
+          `Please help with step 4 of the CPS 230 assessment - analyze potential failures in the ${processDetails.processName || '[Process Name]'} process following the refined v2 methodology.`,
+          `Following the Failure Analysis instructions in your system prompt, identify failure categories in ${processDetails.processName || '[Process Name]'} and map where they would most likely occur.`
+        ]}
+        tips={[
+          "Identify common failure types rather than mapping failures to each individual step",
+          "Group failures by category (e.g., timeliness issues, accuracy problems, system failures)",
+          "Map where in the process these common failure types are most likely to occur",
+          "Consider what severe impact failure scenarios might have been missed",
+          "This approach significantly reduces repetition compared to step-by-step failure analysis"
+        ]}
+        version="v2"
+      />
+    );
+  };
+  
+  const RiskConsolidationStep = () => {
+    return (
+      <AgentStep 
+        stepNumber={5}
+        agentName="Risk Consolidation"
+        description="Create and refine a risk register with follow-up questions"
+        inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step4_FailureAnalysis.docx`}
+        outputFile={`P[ID]_[ProcessName]_v2_Step5_RiskRegister.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+        promptExamples={[
+          `Consolidate the failure types into an initial risk register for ${processDetails.processName || '[Process Name]'}, then apply the refinement questions in sequence to improve quality.`,
+          `Please help with step 5 of the CPS 230 assessment - create a comprehensive risk register for ${processDetails.processName || '[Process Name]'} following the two-step approach (initial creation then refinement).`,
+          `Following the Risk Consolidation and CPS 230 Risk Categorization instructions in your system prompt, create a risk register for ${processDetails.processName || '[Process Name]'} with proper CPS 230 alignment.`
+        ]}
+        tips={[
+          "First create an initial risk register with 8-12 risks, then apply the refinement questions",
+          "Use the follow-up questions in sequence: redundancy elimination, materiality assessment, CPS 230 alignment",
+          "Specifically consider operational resilience, business continuity, IT recovery, and third-party risks",
+          "Categorize risks using the CPS 230-aligned categories in your system prompt",
+          "For each risk, ensure proper format: 'Risk that [event] occurs due to [causes], resulting in [consequences]'",
+          "Aim for 5-8 meaningful, consolidated risks that are properly aligned with CPS 230 requirements"
+        ]}
+        version="v2"
+      />
+    );
+  };
+  
+  const ControlMappingStep = () => {
+    return (
+      <AgentStep 
+        stepNumber={6}
+        agentName="Control Mapping"
+        description="Map identified risks to existing controls"
+        inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step5_RiskRegister.docx and CPS230_Control_Register.xlsx`}
+        outputFile={`P[ID]_[ProcessName]_v2_Step6_ControlMapping.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+        promptExamples={[
+          `Map each risk in our register to the existing controls in the Archer control register with an exhaustive line-by-line comparison.`,
+          `Please help with step 6 of the CPS 230 assessment - perform comprehensive control mapping for ${processDetails.processName || '[Process Name]'} following the v2 methodology.`,
+          `Following the Control Mapping and Control Effectiveness Assessment instructions in your system prompt, map ${processDetails.processName || '[Process Name]'} risks to existing controls and evaluate effectiveness.`
+        ]}
+        tips={[
+          "Perform an exhaustive line-by-line comparison of risks to controls, not stopping after finding one match",
+          "Create a clear mapping table showing all risks and their corresponding existing controls",
+          "Create a separate table for controls deemed not relevant to identified risks",
+          "Compare process controls identified in step 3 against the organizational control register",
+          "Identify controls that appear in the process but aren't documented in the control register",
+          "For v2 methodology, assess control effectiveness across design, operation and resilience contribution"
+        ]}
+        version="v2"
+      />
+    );
+  };
+  
+  const GapAnalysisStep = () => {
+    return (
+      <AgentStep 
+        stepNumber={7}
+        agentName="Gap Analysis"
+        description="Identify and classify control gaps"
+        inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step6_ControlMapping.docx`}
+        outputFile={`P[ID]_[ProcessName]_v2_Step7_GapAnalysis.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+        promptExamples={[
+          `Taking a holistic view of the mapped controls, identify control gaps in the ${processDetails.processName || '[Process Name]'} process and categorize them using the four-bucket classification system.`,
+          `Please help with step 7 of the CPS 230 assessment - perform a comprehensive gap analysis for ${processDetails.processName || '[Process Name]'} with specific focus on CPS 230 control areas.`,
+          `Following the Gap Analysis and CPS 230 Control Gap Assessment instructions in your system prompt, identify control gaps in ${processDetails.processName || '[Process Name]'} and provide recommendations.`
+        ]}
+        tips={[
+          "Take a holistic view of all identified risks and their mapped controls",
+          "Categorize controls into the four buckets: relevant registered controls, non-relevant registered controls, documented but unregistered controls, and control gaps",
+          "For each risk, assess if there's an appropriate balance of preventative and detective controls",
+          "Focus on the specific CPS 230 control areas: Critical Operations Resilience, Material Service Provider Controls, Information Asset Controls, and Testing Controls",
+          "Provide specific recommendations for new or enhanced controls with clear justification based on CPS 230 requirements",
+          "Consider where automation could improve control effectiveness and identify missing system controls"
+        ]}
+        version="v2"
+      />
+    );
+  };
+
   // Final Review Step
-  const FinalReviewStep = () => {
-    const accordionItems = [
+  const FinalReviewStep = ({ version = "v1" }: { version?: string }) => {
+    const getDocumentsToVerify = () => {
+      if (version === "v2") {
+        return [
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step1_ProcessDetail.docx`,
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step2_ExecSummary.docx`,
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step3_Controls.docx`,
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step4_FailureAnalysis.docx`,
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step5_RiskRegister.docx`,
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step6_ControlMapping.docx`,
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Step7_GapAnalysis.docx`,
+        ];
+      } else {
+        return [
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step1_ProcessSummary.docx`,
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step2_ProcessDetail.docx`,
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step3_FailurePoints.docx`,
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step4_RiskConsolidation.docx`,
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step5_ExpectedControls.docx`,
+          `P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step6_ControlGapAnalysis.docx`,
+        ];
+      }
+    };
+
+    const documents = getDocumentsToVerify();
+
+    const commonAccordionItems = [
       {
         id: 'document-verification',
         title: '1. Document Verification Checklist',
@@ -397,128 +675,73 @@ export function ProcessWalkthroughWizard() {
         content: (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Verify all six documents have been created with correct naming:
+              Verify all documents have been created with correct naming:
             </p>
             <div className="space-y-2 mt-3">
-              <div className="flex items-center p-2 bg-slate-50 rounded">
-                <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                <code>P{processDetails.processId || '[ID]'}_{processDetails.processName || '[ProcessName]'}_Step1_ProcessSummary.docx</code>
-              </div>
-              <div className="flex items-center p-2 bg-slate-50 rounded">
-                <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                <code>P{processDetails.processId || '[ID]'}_{processDetails.processName || '[ProcessName]'}_Step2_ProcessDetail.docx</code>
-              </div>
-              <div className="flex items-center p-2 bg-slate-50 rounded">
-                <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                <code>P{processDetails.processId || '[ID]'}_{processDetails.processName || '[ProcessName]'}_Step3_FailurePoints.docx</code>
-              </div>
-              <div className="flex items-center p-2 bg-slate-50 rounded">
-                <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                <code>P{processDetails.processId || '[ID]'}_{processDetails.processName || '[ProcessName]'}_Step4_RiskConsolidation.docx</code>
-              </div>
-              <div className="flex items-center p-2 bg-slate-50 rounded">
-                <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                <code>P{processDetails.processId || '[ID]'}_{processDetails.processName || '[ProcessName]'}_Step5_ExpectedControls.docx</code>
-              </div>
-              <div className="flex items-center p-2 bg-slate-50 rounded">
-                <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                <code>P{processDetails.processId || '[ID]'}_{processDetails.processName || '[ProcessName]'}_Step6_ControlGapAnalysis.docx</code>
-              </div>
+              {documents.map((doc, index) => (
+                <div key={index} className="flex items-center p-2 bg-slate-50 rounded">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
+                  <code>{doc}</code>
+                </div>
+              ))}
             </div>
-          </div>
-        )
-      },
-      {
-        id: 'quality-assurance',
-        title: '2. Quality Assurance Check',
-        icon: <Info className="h-5 w-5" />,
-        content: (
-          <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">Review the content of each document for quality and consistency:</p>
-            <div className="space-y-2 mt-2 pl-4 border-l-2 border-slate-200">
-              <div className="space-y-1">
-                <p className="text-sm font-medium">Format and Style</p>
-                <ul className="list-disc pl-6 text-sm text-muted-foreground space-y-1">
-                  <li>Verify headings use Heading 2 style for main sections</li>
-                  <li>Check that body text uses Calibri 11pt</li>
-                  <li>Ensure tables have bold column headers</li>
-                  <li>Confirm bullet points are properly formatted within cells</li>
-                </ul>
-              </div>
-              
-              <div className="space-y-1 mt-3">
-                <p className="text-sm font-medium">Content Validation</p>
-                <ul className="list-disc pl-6 text-sm text-muted-foreground space-y-1">
-                  <li>Verify the executive summary accurately represents the process</li>
-                  <li>Check that the process detail table captures all major steps</li>
-                  <li>Confirm 3-5 failure points are listed for each process step</li>
-                  <li>Validate risk statements follow the correct format</li>
-                  <li>Ensure at least one preventative and one detective control per risk</li>
-                  <li>Review gap analysis findings and next steps for reasonableness</li>
-                </ul>
-              </div>
-              
-              <div className="space-y-1 mt-3">
-                <p className="text-sm font-medium">ID and Reference Checks</p>
-                <ul className="list-disc pl-6 text-sm text-muted-foreground space-y-1">
-                  <li>Verify process step names are consistent across documents</li>
-                  <li>Check that risk IDs (R1, R2, etc.) are used consistently</li>
-                  <li>Confirm control IDs properly reference their parent risks</li>
-                  <li>Validate that failure points are properly linked to risks</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        )
-      },
-      {
-        id: 'next-steps',
-        title: '3. Next Steps',
-        icon: <ArrowRight className="h-5 w-5" />,
-        content: (
-          <div className="space-y-3">
-            <ol className="list-decimal pl-6 space-y-2">
-              <li>Update your master tracking spreadsheet to mark this process as complete</li>
-              <li>Schedule a review meeting with stakeholders to discuss the findings</li>
-              <li>Prioritize addressing the control gaps identified in Step 6</li>
-              <li>Document any action items and responsible parties for addressing gaps</li>
-              <li>Set follow-up dates for remediation of identified control gaps</li>
-              <li>Consider conducting a peer review for quality assurance</li>
-            </ol>
-          </div>
-        )
-      },
-      {
-        id: 'assessment-complete',
-        title: '4. Assessment Complete',
-        icon: <CheckCircle2 className="h-5 w-5" />,
-        content: (
-          <div className="space-y-3">
-            <p className="text-sm">
-              You have successfully completed the CPS 230 risk assessment for the {processDetails.processName || '[Process Name]'} process. 
-              All documentation is now ready for review and can be shared with stakeholders.
-            </p>
-          </div>
-        )
-      },
-      {
-        id: 'team-coordination',
-        title: '5. Team Coordination',
-        icon: <Info className="h-5 w-5" />,
-        content: (
-          <div className="space-y-3">
-            <p className="text-sm">For organizations assessing multiple processes in parallel:</p>
-            <ul className="text-sm list-disc pl-6 space-y-1">
-              <li>Maintain a central tracker for all processes under assessment</li>
-              <li>Establish clear ownership of each process or step</li>
-              <li>Hold regular team check-ins to discuss progress and challenges</li>
-              <li>Perform periodic peer reviews across process assessments</li>
-              <li>Document decisions about risk consolidation or control definitions</li>
-              <li>Create a consistent approach to addressing control gaps</li>
-            </ul>
           </div>
         )
       }
+    ];
+
+    // V2-specific items for the final report
+    const v2FinalReportItems = version === "v2" 
+      ? [
+          {
+            id: 'final-report',
+            title: '2. Create CPS 230 Compliance Dashboard',
+            icon: <FileText className="h-5 w-5" />,
+            content: (
+              <div className="space-y-3">
+                <p className="text-sm">Create a final compliance report by asking the agent to:</p>
+                <div className="bg-slate-50 p-3 rounded-md border">
+                  <p className="text-sm">
+                    "Following the Final Reporting and CPS 230 Alignment section in your system prompt, create a comprehensive compliance report for the {processDetails.processName || '[Process Name]'} process that includes:
+                  </p>
+                  <ol className="list-decimal pl-6 text-sm mt-2 space-y-1">
+                    <li>Executive Summary of key findings</li>
+                    <li>CPS 230 Compliance Dashboard with traffic light indicators</li>
+                    <li>Prioritized Action Plan for addressing gaps</li>
+                    <li>Supporting evidence linked to process documentation</li>
+                  </ol>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Save this final report as: <code className="bg-slate-100 px-1">{`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_v2_Final_ComplianceReport.docx`}</code>
+                </p>
+              </div>
+            )
+          },
+          {
+            id: 'methodology-benefits',
+            title: '3. Review Process Benefits',
+            icon: <Info className="h-5 w-5" />,
+            content: (
+              <div className="space-y-3">
+                <p className="text-sm">The refined v2 approach has delivered several benefits:</p>
+                <ul className="list-disc pl-6 text-sm space-y-1">
+                  <li>More meaningful, consolidated risks aligned with CPS 230 requirements</li>
+                  <li>Reduced repetition in both failure points and risks</li>
+                  <li>More holistic view of the control environment</li>
+                  <li>Better connection of failure points to broader risk themes</li>
+                  <li>More actionable insights for validation workshops</li>
+                  <li>Better completeness against regulatory requirements</li>
+                  <li>Identification of genuine control gaps rather than theoretical ones</li>
+                </ul>
+              </div>
+            )
+          }
+        ] 
+      : [];
+
+    const accordionItems = [
+      ...commonAccordionItems,
+      ...(version === "v2" ? v2FinalReportItems : [])
     ];
 
     return (
@@ -535,137 +758,170 @@ export function ProcessWalkthroughWizard() {
     );
   };
 
+  // Render appropriate step based on version and current step
   const renderStep = (currentStep: number) => {
-    switch (currentStep) {
-      case 0:
-        return <PreparationStep />;
-      case 1:
-        return (
-          <AgentStep 
-            stepNumber={1}
-            agentName="Process Summary"
-            description="Generate an executive summary of the business process"
-            inputFile="Process documentation (various formats)"
-            outputFile={`P[ID]_[ProcessName]_Step1_ProcessSummary.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
-            promptExamples={[
-              `Give me an executive summary of the ${processDetails.processName || '[Process Name]'} process.`,
-              `Summarize the ${processDetails.processName || '[Process Name]'} process for a CPS 230 risk workshop.`
-            ]}
-            tips={[
-              "The executive summary should be concise but comprehensive",
-              "Ensure it covers process objectives, flow, key decision points, and dependencies",
-              "Review the summary for accuracy and alignment with the process documentation"
-            ]}
-          />
-        );
-      case 2:
-        return (
-          <AgentStep 
-            stepNumber={2}
-            agentName="Process Detail Table"
-            description="Create a detailed breakdown of process steps"
-            inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step1_ProcessSummary.docx (and process documentation)`}
-            outputFile={`P[ID]_[ProcessName]_Step2_ProcessDetail.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
-            promptExamples={[
-              `Create a process detail table for ${processDetails.processName || '[Process Name]'} as per CPS 230 template.`,
-              `List all the steps of ${processDetails.processName || '[Process Name]'} with purpose, actors, systems, etc., in a table.`
-            ]}
-            tips={[
-              "Break down the process into no more than 10 distinct steps",
-              "Ensure every column is filled for each step",
-              "Be specific about systems, roles, and dependencies"
-            ]}
-          />
-        );
-      case 3:
-        return (
-          <AgentStep 
-            stepNumber={3}
-            agentName="Failure Point Analysis"
-            description="Identify potential failure scenarios at each process step"
-            inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step2_ProcessDetail.docx`}
-            outputFile={`P[ID]_[ProcessName]_Step3_FailurePoints.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
-            promptExamples={[
-              `What are the potential failure points in each step of ${processDetails.processName || '[Process Name]'}?`,
-              `Analyze ${processDetails.processName || '[Process Name]'} for vulnerabilities or things that could go wrong at each step.`
-            ]}
-            tips={[
-              "Focus on 3-5 significant failure points per process step",
-              "Consider both technical and operational failure scenarios",
-              "Ensure each failure point has clear causes and impacts defined"
-            ]}
-          />
-        );
-      case 4:
-        return (
-          <AgentStep 
-            stepNumber={4}
-            agentName="Risk Consolidation"
-            description="Consolidate failure points into a risk register"
-            inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step3_FailurePoints.docx`}
-            outputFile={`P[ID]_[ProcessName]_Step4_RiskConsolidation.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
-            promptExamples={[
-              `Consolidate the failure points into a risk register for ${processDetails.processName || '[Process Name]'}.`,
-              `Generate a CPS 230 risk register: list top risks for ${processDetails.processName || '[Process Name]'}, with statements and categories.`
-            ]}
-            tips={[
-              "Aim for 5-10 distinct risks that cover all major vulnerability themes",
-              "Ensure each risk statement follows the format: 'Risk that [event] occurs due to [causes], resulting in [consequences]'",
-              "Verify each risk is properly categorized and linked to the process steps"
-            ]}
-          />
-        );
-      case 5:
-        return (
-          <AgentStep 
-            stepNumber={5}
-            agentName="Expected Controls"
-            description="Define expected controls for each identified risk"
-            inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step4_RiskConsolidation.docx`}
-            outputFile={`P[ID]_[ProcessName]_Step5_ExpectedControls.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
-            promptExamples={[
-              `For each risk in our register, list expected controls with their type and category.`,
-              `What controls should we have for the risks identified in ${processDetails.processName || '[Process Name]'}?`
-            ]}
-            tips={[
-              "Include at least one preventative and one detective control for each risk",
-              "Specify control type (Preventative, Detective, Corrective) and category (Manual, Automated, Semi-automated)",
-              "Focus on meaningful controls that would significantly reduce the risk"
-            ]}
-          />
-        );
-      case 6:
-        return (
-          <AgentStep 
-            stepNumber={6}
-            agentName="Control Gap Analysis"
-            description="Analyze control gaps in the current process"
-            inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step5_ExpectedControls.docx (and process documentation)`}
-            outputFile={`P[ID]_[ProcessName]_Step6_ControlGapAnalysis.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
-            promptExamples={[
-              `Check the process for evidence of the expected controls for ${processDetails.processName || '[Process Name]'} and identify any gaps.`,
-              `Perform a control gap analysis for ${processDetails.processName || '[Process Name]'} based on our expected controls.`
-            ]}
-            tips={[
-              "Ensure the agent has access to both the expected controls list and the original process documentation",
-              "For each control, verify if there is evidence in the documentation",
-              "Be objective in the assessment – mark controls as 'No evidence' if they truly aren't mentioned",
-              "Specify clear next steps for any gaps identified"
-            ]}
-          />
-        );
-      case 7:
-        return <FinalReviewStep />;
-      default:
-        return <PreparationStep />;
+    // Version 1 (Original)
+    if (currentVersion.id === "v1") {
+      switch (currentStep) {
+        case 0:
+          return <PreparationStep />;
+        case 1:
+          return (
+            <AgentStep 
+              stepNumber={1}
+              agentName="Process Summary"
+              description="Generate an executive summary of the business process"
+              inputFile="Process documentation (various formats)"
+              outputFile={`P[ID]_[ProcessName]_Step1_ProcessSummary.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+              promptExamples={[
+                `Give me an executive summary of the ${processDetails.processName || '[Process Name]'} process.`,
+                `Summarize the ${processDetails.processName || '[Process Name]'} process for a CPS 230 risk workshop.`
+              ]}
+              tips={[
+                "The executive summary should be concise but comprehensive",
+                "Ensure it covers process objectives, flow, key decision points, and dependencies",
+                "Review the summary for accuracy and alignment with the process documentation"
+              ]}
+            />
+          );
+        case 2:
+          return (
+            <AgentStep 
+              stepNumber={2}
+              agentName="Process Detail Table"
+              description="Create a detailed breakdown of process steps"
+              inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step1_ProcessSummary.docx (and process documentation)`}
+              outputFile={`P[ID]_[ProcessName]_Step2_ProcessDetail.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+              promptExamples={[
+                `Create a process detail table for ${processDetails.processName || '[Process Name]'} as per CPS 230 template.`,
+                `List all the steps of ${processDetails.processName || '[Process Name]'} with purpose, actors, systems, etc., in a table.`
+              ]}
+              tips={[
+                "Break down the process into no more than 10 distinct steps",
+                "Ensure every column is filled for each step",
+                "Be specific about systems, roles, and dependencies"
+              ]}
+            />
+          );
+        case 3:
+          return (
+            <AgentStep 
+              stepNumber={3}
+              agentName="Failure Point Analysis"
+              description="Identify potential failure scenarios at each process step"
+              inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step2_ProcessDetail.docx`}
+              outputFile={`P[ID]_[ProcessName]_Step3_FailurePoints.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+              promptExamples={[
+                `What are the potential failure points in each step of ${processDetails.processName || '[Process Name]'}?`,
+                `Analyze ${processDetails.processName || '[Process Name]'} for vulnerabilities or things that could go wrong at each step.`
+              ]}
+              tips={[
+                "Focus on 3-5 significant failure points per process step",
+                "Consider both technical and operational failure scenarios",
+                "Ensure each failure point has clear causes and impacts defined"
+              ]}
+            />
+          );
+        case 4:
+          return (
+            <AgentStep 
+              stepNumber={4}
+              agentName="Risk Consolidation"
+              description="Consolidate failure points into a risk register"
+              inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step3_FailurePoints.docx`}
+              outputFile={`P[ID]_[ProcessName]_Step4_RiskConsolidation.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+              promptExamples={[
+                `Consolidate the failure points into a risk register for ${processDetails.processName || '[Process Name]'}.`,
+                `Generate a CPS 230 risk register: list top risks for ${processDetails.processName || '[Process Name]'}, with statements and categories.`
+              ]}
+              tips={[
+                "Aim for 5-10 distinct risks that cover all major vulnerability themes",
+                "Ensure each risk statement follows the format: 'Risk that [event] occurs due to [causes], resulting in [consequences]'",
+                "Verify each risk is properly categorized and linked to the process steps"
+              ]}
+            />
+          );
+        case 5:
+          return (
+            <AgentStep 
+              stepNumber={5}
+              agentName="Expected Controls"
+              description="Define expected controls for each identified risk"
+              inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step4_RiskConsolidation.docx`}
+              outputFile={`P[ID]_[ProcessName]_Step5_ExpectedControls.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+              promptExamples={[
+                `For each risk in our register, list expected controls with their type and category.`,
+                `What controls should we have for the risks identified in ${processDetails.processName || '[Process Name]'}?`
+              ]}
+              tips={[
+                "Include at least one preventative and one detective control for each risk",
+                "Specify control type (Preventative, Detective, Corrective) and category (Manual, Automated, Semi-automated)",
+                "Focus on meaningful controls that would significantly reduce the risk"
+              ]}
+            />
+          );
+        case 6:
+          return (
+            <AgentStep 
+              stepNumber={6}
+              agentName="Control Gap Analysis"
+              description="Analyze control gaps in the current process"
+              inputFile={`P${processDetails.processId || '[ID]'}_${processDetails.processName || '[ProcessName]'}_Step5_ExpectedControls.docx (and process documentation)`}
+              outputFile={`P[ID]_[ProcessName]_Step6_ControlGapAnalysis.docx`.replace('[ID]', processDetails.processId).replace('[ProcessName]', processDetails.processName)}
+              promptExamples={[
+                `Check the process for evidence of the expected controls for ${processDetails.processName || '[Process Name]'} and identify any gaps.`,
+                `Perform a control gap analysis for ${processDetails.processName || '[Process Name]'} based on our expected controls.`
+              ]}
+              tips={[
+                "Ensure the agent has access to both the expected controls list and the original process documentation",
+                "For each control, verify if there is evidence in the documentation",
+                "Be objective in the assessment – mark controls as 'No evidence' if they truly aren't mentioned",
+                "Specify clear next steps for any gaps identified"
+              ]}
+            />
+          );
+        case 7:
+          return <FinalReviewStep />;
+        default:
+          return <PreparationStep />;
+      }
     }
+    
+    // Version 2 (Refined)
+    else if (currentVersion.id === "v2") {
+      switch (currentStep) {
+        case 0:
+          return <PreparationStep version="v2" />;
+        case 1:
+          return <ProcessDetailStep />;
+        case 2:
+          return <ExecutiveSummaryStep />;
+        case 3:
+          return <ControlIdentificationStep />;
+        case 4:
+          return <FailureAnalysisStep />;
+        case 5:
+          return <RiskConsolidationStep />;
+        case 6:
+          return <ControlMappingStep />;
+        case 7:
+          return <GapAnalysisStep />;
+        case 8:
+          return <FinalReviewStep version="v2" />;
+        default:
+          return <PreparationStep version="v2" />;
+      }
+    }
+    
+    // Default fallback
+    return <PreparationStep />;
   };
 
   return (
     <WizardLayout
       title="CPS 230 Process Assessment Walkthrough"
-      description="Guide for assessing a business process with the six Copilot agents"
-      steps={CPS230_WALKTHROUGH_STEPS}
+      description="Guide for assessing a business process with the Copilot agents"
+      steps={currentVersion.processSteps}
     >
       {({ state }) => renderStep(state.currentStep)}
     </WizardLayout>
